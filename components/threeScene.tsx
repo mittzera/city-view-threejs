@@ -3,11 +3,12 @@
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { MapControls } from "three/examples/jsm/controls/MapControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { pointsOfInterest } from "./pointsOfInterest";
 
 const ThreeScene = () => {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -57,24 +58,6 @@ const ThreeScene = () => {
         setIsLoading(false); // Set loading to false even if there's an error
       }
     );
-
-    // Pontos de interesse
-    const pointsOfInterest = [
-      {
-        position: new THREE.Vector3(6, 1, 3),
-        title: "Condomínio das Torres Reais",
-        description:
-          "Localizado em uma das áreas mais nobres da cidade, o Condomínio das Torres Reais combina sofisticação, segurança e conforto em um único espaço. Projetado para oferecer uma experiência de moradia diferenciada, o empreendimento é composto por três imponentes torres de arquitetura moderna e elegante, cercadas por uma infraestrutura completa que valoriza a qualidade de vida dos moradores.",
-        image: "/ponto1.jpg",
-      },
-      {
-        position: new THREE.Vector3(-8, 1, 1),
-        title: "Escola Municipal Novo Saber",
-        description:
-          "A Escola Municipal Novo Saber é uma instituição de ensino comprometida com a formação acadêmica, social e emocional de seus alunos. Localizada em um ambiente seguro e acolhedor, a escola oferece uma educação de qualidade voltada para o desenvolvimento integral das crianças e adolescentes, preparando-os para os desafios do futuro.",
-        image: "/ponto2.jpg",
-      },
-    ];
 
     const spheres: THREE.Mesh[] = [];
     pointsOfInterest.forEach((poi) => {
@@ -144,29 +127,31 @@ const ThreeScene = () => {
 
       {/* Sidebar */}
       <div
-      className={`fixed top-0 right-0 h-full w-96 bg-white shadow-lg transform transition-transform duration-300 ${
-        sidebarInfo ? "translate-x-0" : "translate-x-full"
-      }`}
+        className={`fixed top-0 right-0 h-full w-96 bg-white shadow-lg transform transition-transform duration-300 ${
+          sidebarInfo ? "translate-x-0" : "translate-x-full"
+        }`}
       >
-      <button
-        className="absolute top-4 left-4 text-gray-600"
-        onClick={() => setSidebarInfo(null)}
-      >
-        ✖
-      </button>
-      {sidebarInfo && (
-        <div className="p-4 mt-10">
-        <p className="mt-2 font-bold text-2xl text-gray-700">{sidebarInfo.title}</p>
-        <Image
-          src={sidebarInfo.image}
-          alt={sidebarInfo.title}
-          className="mt-2 rounded-lg shadow-md"
-          width={300}
-          height={200}
-        />
-        <p className="mt-2 text-gray-700">{sidebarInfo.description}</p>
-        </div>
-      )}
+        <button
+          className="absolute top-4 left-4 text-gray-600"
+          onClick={() => setSidebarInfo(null)}
+        >
+          ✖
+        </button>
+        {sidebarInfo && (
+          <div className="p-4 mt-10">
+            <p className="mt-2 font-bold text-2xl text-gray-700">
+              {sidebarInfo.title}
+            </p>
+            <Image
+              src={sidebarInfo.image}
+              alt={sidebarInfo.title}
+              className="mt-2 rounded-lg shadow-md"
+              width={300}
+              height={200}
+            />
+            <p className="mt-2 text-gray-700">{sidebarInfo.description}</p>
+          </div>
+        )}
       </div>
     </>
   );
@@ -190,7 +175,7 @@ const styles = `
 `;
 
 // Inject the styles into the document head
-if (typeof document !== 'undefined') {
+if (typeof document !== "undefined") {
   const styleSheet = document.createElement("style");
   styleSheet.type = "text/css";
   styleSheet.innerText = styles;
