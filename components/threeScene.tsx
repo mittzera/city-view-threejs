@@ -59,7 +59,7 @@ const ThreeScene = () => {
 
     const loader = new GLTFLoader();
     loader.load(
-      "/catedralse.glb",
+      "https://raw.githubusercontent.com/mittzera/Threejs-boilerplate/main/public/CatedralSe.glb",
       (glb) => {
         const model = glb.scene;
         scene.add(model);
