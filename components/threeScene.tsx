@@ -9,6 +9,7 @@ import * as THREE from "three";
 import { MapControls } from "three/examples/jsm/controls/MapControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { pointsOfInterest } from "./pointsOfInterest";
+import Link from "next/link";
 
 const ThreeScene = () => {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -24,7 +25,7 @@ const ThreeScene = () => {
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0xfefefe);
+    renderer.setClearColor(0x333333); // Change to your desired color
     mountRef.current.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
@@ -34,7 +35,8 @@ const ThreeScene = () => {
       0.1,
       1000
     );
-    camera.position.set(6, 8, 14);
+    camera.position.set(0, 90, -100);
+    camera.lookAt(-10, 19, -55); // Define o ponto para onde a câmera está olhando
 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
@@ -42,10 +44,22 @@ const ThreeScene = () => {
     // Adiciona luz
     const light = new THREE.AmbientLight(0xffffff, 1);
     scene.add(light);
+    
+    // // Adiciona o grid de posicionamento
+    // const gridHelper = new THREE.GridHelper(500, 50); // Tamanho do grid e número de divisões
+    // scene.add(gridHelper);
+    
+    // // Adiciona indicadores de eixos x, y, z
+    // const axesHelper = new THREE.AxesHelper(250); // Tamanho dos eixos (metade do grid)
+    // scene.add(axesHelper);
+
+// Red line for X axis
+// Green line for Y axis
+// Blue line for Z axis
 
     const loader = new GLTFLoader();
     loader.load(
-      "https://raw.githubusercontent.com/mittzera/Threejs-boilerplate/a1eacf42e7481b9bc9acbecb2a4098f75702e7ba/public/sporting_village.glb",
+      "/catedralse.glb",
       (glb) => {
         const model = glb.scene;
         scene.add(model);
@@ -59,21 +73,41 @@ const ThreeScene = () => {
       }
     );
 
-    const spheres: THREE.Mesh[] = [];
+    const spheres: THREE.Object3D[] = [];
     pointsOfInterest.forEach((poi) => {
-      const geometry = new THREE.SphereGeometry(0.2, 16, 16);
-      const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-      const sphere = new THREE.Mesh(geometry, material);
-      sphere.position.copy(poi.position);
-      scene.add(sphere);
-      spheres.push(sphere);
-
-      // Armazena os dados do ponto no objeto para identificação posterior
-      (sphere as any).userData = {
+      // Create a pin shape (cone with sphere on top)
+      const pinGroup = new THREE.Group();
+      
+      // Head of the pin (sphere)
+      const headGeometry = new THREE.SphereGeometry(3, 16, 16);
+      const headMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+      const head = new THREE.Mesh(headGeometry, headMaterial);
+      head.position.y = 6; // Position head above the cone
+      pinGroup.add(head);
+      
+      // Body of the pin (cone)
+      const bodyGeometry = new THREE.ConeGeometry(2.8, 4, 8);
+      const bodyMaterial = new THREE.MeshBasicMaterial({ color: 0xcc0000 });
+      const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+      body.position.y = 0; // Base of the pin
+      body.rotation.x = Math.PI; // Flip cone so point is down
+      pinGroup.add(body);
+      
+      // Position the entire pin at the POI location
+      // Move up by 2 so the tip of the pin is at the exact position
+      pinGroup.position.copy(poi.position);
+      pinGroup.position.y += 2; // Elevate slightly so pin tip is at the point
+      
+      scene.add(pinGroup);
+      
+      // Store the pin group for interaction
+      (pinGroup as any).userData = {
         title: poi.title,
         description: poi.description,
         image: poi.image,
       };
+      
+      spheres.push(pinGroup);
     });
 
     const controls = new MapControls(camera, renderer.domElement);
@@ -92,11 +126,20 @@ const ThreeScene = () => {
       mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
       raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(spheres);
+      // Use recursive option to intersect with all meshes in the groups
+      const intersects = raycaster.intersectObjects(scene.children, true);
 
       if (intersects.length > 0) {
-        const { title, description, image } = intersects[0].object.userData;
-        setSidebarInfo({ title, description, image });
+        // Find the pin group that contains this mesh
+        let obj: THREE.Object3D | null = intersects[0].object;
+        while (obj && (!obj.userData || !obj.userData.title)) {
+          obj = obj.parent as THREE.Object3D | null;
+        }
+        
+        if (obj && obj.userData && obj.userData.title) {
+          const { title, description, image } = obj.userData;
+          setSidebarInfo({ title, description, image });
+        }
       }
     };
 
@@ -119,15 +162,32 @@ const ThreeScene = () => {
   return (
     <>
       {isLoading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
-          <div className="loader"></div>
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-white z-50">
+          <div className="loader mb-10"></div>
+          <Link href={"https://www.amazonsky.com.br"} target="_blank">
+            <div className="flex flex-col items-center bg-white bg-opacity-80 px-3 py-2 rounded-lg shadow-md z-10">
+              <span className="text-sm font-medium text-gray-700 mb-2">
+                Aerofotogrametria feita por
+              </span>
+              <Image
+                src="/logo.png"
+                alt="Company Logo"
+                width={160}
+                height={60}
+                className="h-auto"
+              />
+              <span className="text-sm font-medium text-gray-700 mb-2">
+                Clique aqui e conheça melhor nossos serviços
+              </span>
+            </div>
+          </Link>
         </div>
       )}
       <div ref={mountRef} className="w-full h-full" />
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 right-0 h-full w-96 bg-white shadow-lg transform transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-full w-96 bg-white shadow-lg transform transition-transform duration-300 z-20 ${
           sidebarInfo ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -149,7 +209,9 @@ const ThreeScene = () => {
               width={300}
               height={200}
             />
-            <p className="mt-2 text-gray-700">{sidebarInfo.description}</p>
+            <p className="mt-2 text-gray-700 px-4 text-start overflow-y-auto">
+              {sidebarInfo.description}
+            </p>
           </div>
         )}
       </div>
