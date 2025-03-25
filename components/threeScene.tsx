@@ -187,19 +187,19 @@ const ThreeScene = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 right-0 h-full w-96 bg-white shadow-lg transform transition-transform duration-300 z-20 ${
+        className={`fixed top-0 right-0 h-full w-96 bg-primary shadow-lg transform transition-transform duration-300 z-20 ${
           sidebarInfo ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <button
-          className="absolute top-4 left-4 text-gray-600"
+          className="absolute top-4 left-4 text-white"
           onClick={() => setSidebarInfo(null)}
         >
           ✖
         </button>
         {sidebarInfo && (
           <div className="p-4 mt-10">
-            <p className="mt-2 font-bold text-2xl text-gray-700">
+            <p className="mt-2 font-bold text-2xl text-white">
               {sidebarInfo.title}
             </p>
             <Image
@@ -209,7 +209,7 @@ const ThreeScene = () => {
               width={300}
               height={200}
             />
-            <p className="mt-2 text-gray-700 px-4 text-start overflow-y-auto">
+            <p className="mt-2 text-white px-4 text-start overflow-y-auto">
               {sidebarInfo.description}
             </p>
           </div>
