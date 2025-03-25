@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "City View in Threejs",
-  description: "City View in Threejs",
+  title: "Catedral da Se - AMAZonSKY",
+  description: "Aerofotogrametria da Catedral da Sé por AMAZonSKY",
 };
 
 export default function RootLayout({
