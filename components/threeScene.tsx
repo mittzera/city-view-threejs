@@ -9,7 +9,6 @@ import * as THREE from "three";
 import { MapControls } from "three/examples/jsm/controls/MapControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { pointsOfInterest } from "./pointsOfInterest";
-import Link from "next/link";
 
 const ThreeScene = () => {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -164,23 +163,7 @@ const ThreeScene = () => {
       {isLoading && (
         <div className="fixed inset-0 flex flex-col items-center justify-center bg-white z-50">
           <div className="loader mb-10"></div>
-          <Link href={"https://www.amazonsky.com.br"} target="_blank">
-            <div className="flex flex-col items-center bg-white bg-opacity-80 px-3 py-2 rounded-lg shadow-md z-10">
-              <span className="text-sm font-medium text-gray-700 mb-2">
-                Aerofotogrametria feita por
-              </span>
-              <Image
-                src="/logo.png"
-                alt="Company Logo"
-                width={160}
-                height={60}
-                className="h-auto"
-              />
-              <span className="text-sm font-medium text-gray-700 mb-2">
-                Clique aqui e conheça melhor nossos serviços
-              </span>
-            </div>
-          </Link>
+          <p className="text-lg text-gray-700">Carregando...</p>
         </div>
       )}
       <div ref={mountRef} className="w-full h-full" />

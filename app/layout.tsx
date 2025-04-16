@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Catedral da Se - AMAZonSKY",
-  description: "Aerofotogrametria da Catedral da Sé por AMAZonSKY",
+  title: "Catedral da Se",
+  description: "Aerofotogrametria da Catedral da Sé por Pollaris",
 };
 
 export default function RootLayout({
